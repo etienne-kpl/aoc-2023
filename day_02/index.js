@@ -14,7 +14,7 @@ function dataParser(rawData) {
   const parsedData = sets.map((set) => {
     const values = set.map((cubes) => {
       const object = {};
-      cubes.split(", ").map((cube) => {
+      cubes.split(", ").forEach((cube) => {
         const array = cube.split(" ");
         object[array[1]] = parseInt(array[0]);
       });
@@ -44,4 +44,25 @@ inputReader("input.txt").then((data) => {
     }
   });
   console.log(indexCounter);
+});
+
+// Part two
+inputReader("input.txt").then((data) => {
+  const arrayData = rawToArray(data);
+  const parsedData = dataParser(arrayData);
+
+  const maxValues = parsedData.map((game) => {
+    return {
+      red: Math.max(...game.map((set) => set.red ?? 0)),
+      green: Math.max(...game.map((set) => set.green ?? 0)),
+      blue: Math.max(...game.map((set) => set.blue ?? 0)),
+    };
+  });
+
+  const powers = maxValues.map((maxValue) =>
+    Object.values(maxValue).reduce((a, b) => a * b)
+  );
+
+  const sumOfPowers = powers.reduce((a, b) => a + b);
+  console.log(sumOfPowers);
 });
