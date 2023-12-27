@@ -5,7 +5,11 @@ function symbolsLocationsFinder(array) {
   const regex = /[^0-9.]/g;
   // Find all matches at each row and return their index
   // Element type [ '*', index: 3, input: '...*......', groups: undefined ]
-  return array.map((row) => [...row.matchAll(regex)].map((el) => el.index));
+  return array.map((row) =>
+    [...row.matchAll(regex)].map((el) => {
+      return { value: el[0], index: el.index };
+    })
+  );
 }
 
 function numbersLocationsFinder(array) {
@@ -13,9 +17,8 @@ function numbersLocationsFinder(array) {
   return array.map((row) =>
     [...row.matchAll(regex)].map((el) => {
       return {
-        value: parseInt(el[0]),
-        startIndex: el.index,
-        endIndex: el.index + el[0].length - 1,
+        value: el[0],
+        index: el.index,
       };
     })
   );
@@ -30,12 +33,13 @@ inputReader("input.txt").then((data) => {
   const partNumbers = [];
 
   const isLocationAdjacentToSymbol = (location, index) => {
+    // For first and last lines
     if (index < 0 || index >= numbersLocations.length) return false;
 
     return symbolsLocations[index].some(
       (symbolIndex) =>
-        symbolIndex >= location.startIndex - 1 &&
-        symbolIndex <= location.endIndex + 1
+        symbolIndex.index >= location.index - 1 &&
+        symbolIndex.index <= location.index + location.value.length
     );
   };
 
@@ -43,11 +47,11 @@ inputReader("input.txt").then((data) => {
   numbersLocations.forEach((row, index) => {
     row.forEach((location) => {
       if (
-        isLocationAdjacentToSymbol(location, index) ||
         isLocationAdjacentToSymbol(location, index - 1) ||
+        isLocationAdjacentToSymbol(location, index) ||
         isLocationAdjacentToSymbol(location, index + 1)
       ) {
-        partNumbers.push(location.value);
+        partNumbers.push(parseInt(location.value));
       }
     });
   });
