@@ -37,9 +37,9 @@ inputReader("input.txt").then((data) => {
     if (index < 0 || index >= numbersLocations.length) return false;
 
     return symbolsLocations[index].some(
-      (symbolIndex) =>
-        symbolIndex.index >= location.index - 1 &&
-        symbolIndex.index <= location.index + location.value.length
+      (symbol) =>
+        symbol.index >= location.index - 1 &&
+        symbol.index <= location.index + location.value.length
     );
   };
 
@@ -56,5 +56,45 @@ inputReader("input.txt").then((data) => {
     });
   });
   const sum = partNumbers.reduce((a, b) => a + b);
+  console.log(sum);
+});
+
+// Part two
+inputReader("input.txt").then((data) => {
+  const arrayData = rawToArray(data);
+
+  const symbolsLocations = symbolsLocationsFinder(arrayData);
+  const numbersLocations = numbersLocationsFinder(arrayData);
+  const potentialGears = symbolsLocations.map((row) =>
+    row.filter((symbol) => symbol.value === "*")
+  );
+  const gearsRatios = [];
+
+  const NumbersAdjacentToGear = (gear, index) => {
+    // For first and last lines
+    if (index < 0 || index >= numbersLocations.length) return [];
+
+    return numbersLocations[index].filter(
+      (number) =>
+        gear.index >= number.index - 1 &&
+        gear.index <= number.index + number.value.length
+    );
+  };
+
+  potentialGears.forEach((row, index) => {
+    row.forEach((gear) => {
+      const adjacentNumbers = [
+        ...NumbersAdjacentToGear(gear, index - 1),
+        ...NumbersAdjacentToGear(gear, index),
+        ...NumbersAdjacentToGear(gear, index + 1),
+      ];
+      if (adjacentNumbers.length === 2) {
+        gearsRatios.push(adjacentNumbers[0].value * adjacentNumbers[1].value);
+      }
+    });
+  });
+
+  const sum = gearsRatios.reduce((a, b) => a + b);
+
   console.log(sum);
 });
