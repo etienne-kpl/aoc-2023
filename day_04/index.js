@@ -7,6 +7,7 @@ inputReader("input.txt").then((data) => {
   const cards = arrayData.map((row) => {
     const numbers = row.split(":")[1].split("|");
     return {
+      copies: 1,
       winning: numbers[0].split(" ").filter((a) => a),
       having: numbers[1].split(" ").filter((a) => a),
     };
@@ -28,6 +29,14 @@ inputReader("input.txt").then((data) => {
     number === 0 ? 0 : Math.pow(2, number - 1)
   );
 
+  // part 2
+  let totalCopies = 0;
+  matchNumbers.forEach((number, index) => {
+    for (let i = 0; i < number; i++)
+      cards[index + 1 + i].copies += cards[index].copies;
+    totalCopies += cards[index].copies;
+  });
+
   const sum = points.reduce((a, b) => a + b);
-  console.log(sum);
+  console.log(sum, totalCopies);
 });
